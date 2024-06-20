@@ -8,6 +8,7 @@
 </head>
 
 <body>
+  <h4>v2</h4>
   <button id="fetchButton" disabled>Fetch Locations</button>
 
   <input type="file" id="image">
@@ -38,29 +39,51 @@
     })
 
     async function getAnalysis(file) {
-      const URL = `https://api.plantix.net/v2/image_analysis`;
-
       const formData = new FormData();
       formData.append('image', file);
       formData.append('application_used_image_gallery', false);
 
-      fetch(URL, {
+
+
+      const apiUrl = 'https://api.plantix.net/v2/image_analysis'; // API endpoint
+      const token = 'ee371caf6cecaca9c76e1475f0491493dc8dc3c0'; // Authorization token
+
+      // Construct headers
+      const headers = new Headers();
+      headers.append('Authorization', `Bearer ${token}`);
+      headers.append('Accept', 'application/json');
+      headers.append('mode', 'cors');
+      headers.append('cache', 'no-cache');
+      // headers.append(':authority', 'api.plantix.net');
+      headers.append('Accept-Encoding', 'gzip, deflate, br, zstd');
+
+      // Fetch options
+      const requestOptions = {
         method: 'POST',
-        headers: new Headers({
-          Authorization: "Bearer ee371caf6cecaca9c76e1475f0491493dc8dc3c0",
-          accept: "application/json",
-          'Content-Type': 'multipart/form-data'
-        }),
-        body: formData
-      })
-        .then(res => res.json())
-        .then(res => {
-          console.log('res', res)
-        }).catch(error => {
-          console.log('api error', error)
-          console.log(error.message)
-        }).finally(() => {
+        headers: headers,
+        body: formData,
+        mode: 'cors',
+        cache: 'no-cache',
+      };
+
+      // Make fetch request
+      fetch(apiUrl, requestOptions)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json(); // Assuming response is JSON; adjust as per your API
         })
+        .then(data => {
+          console.log('API Response:', data);
+          // Handle response data
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+
+
+
     }
 
     document.getElementById('fetchButton').addEventListener('click', async () => {
